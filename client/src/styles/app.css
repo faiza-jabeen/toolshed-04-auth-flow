@@ -1,0 +1,64 @@
+/* Auth flow — layout on the shared Toolshed design system. */
+
+.masthead { background: var(--paint); color: var(--chalk); border-bottom: var(--rule-dark); }
+.masthead__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); min-height: 4rem; flex-wrap: wrap; }
+.wordmark { display: flex; align-items: center; gap: var(--s-3); text-decoration: none; color: inherit; }
+.wordmark__mark {
+  display: grid; place-items: center; width: 2.25rem; height: 2.25rem; flex: none;
+  background: var(--tape); color: var(--tape-ink);
+  font-family: var(--mono); font-weight: 700; font-size: .8rem; border-radius: var(--radius);
+}
+.wordmark__text { font-family: var(--display); font-weight: 600; font-size: .8rem; line-height: 1.1; text-transform: uppercase; }
+.wordmark__text em { font-style: normal; font-weight: 800; letter-spacing: .06em; }
+.masthead__nav { display: flex; align-items: center; gap: var(--s-4); flex-wrap: wrap; }
+.masthead__link {
+  text-decoration: none; font-family: var(--display); font-weight: 600;
+  font-size: var(--step--1); color: var(--zinc-2);
+}
+.masthead__link:hover, .masthead__link.active { color: var(--tape); }
+.masthead__who { font-family: var(--mono); font-size: var(--step--1); color: var(--zinc); }
+.btn--on-dark { color: var(--chalk); border-color: var(--paint-3); }
+.btn--on-dark:hover:not(:disabled) { background: var(--paint-2); }
+
+.boot {
+  display: flex; align-items: center; justify-content: center; gap: var(--s-3);
+  min-height: 50dvh; font-family: var(--mono); font-size: var(--step--1); color: var(--ink-2);
+}
+
+.home { padding-block: var(--s-9); }
+.home__title { margin-top: var(--s-4); }
+.home__body { margin-top: var(--s-5); color: var(--ink-2); font-size: var(--step-1); }
+.home__body code { font-family: var(--mono); font-size: .9em; background: var(--chalk-2); padding: 1px 5px; border-radius: 3px; }
+.home__actions { display: flex; gap: var(--s-3); flex-wrap: wrap; margin-top: var(--s-6); }
+
+.page { padding-block: var(--s-7) var(--s-9); }
+.page__title { margin-top: var(--s-4); font-size: var(--step-3); }
+.page__body { margin-top: var(--s-4); color: var(--ink-2); }
+.page__body code { font-family: var(--mono); font-size: .9em; }
+.page__count { margin: var(--s-5) 0; font-family: var(--mono); font-size: var(--step--1); color: var(--ink-2); display: flex; align-items: center; gap: var(--s-2); }
+
+/* --- the auth gate ------------------------------------------------------- */
+.gate { display: grid; place-items: center; padding-block: var(--s-8); min-height: 70dvh; }
+.gate__card { width: min(100%, 26rem); display: grid; gap: var(--s-4); }
+.gate__title { font-size: var(--step-2); margin-top: var(--s-2); }
+.gate__body { color: var(--ink-2); font-size: var(--step--1); }
+.gate__alert {
+  background: color-mix(in srgb, var(--flag) 10%, #fff);
+  border: 1px solid color-mix(in srgb, var(--flag) 40%, transparent);
+  border-radius: var(--radius); padding: var(--s-3) var(--s-4);
+  color: var(--flag); font-size: var(--step--1); font-weight: 600;
+}
+.gate__submit { width: 100%; margin-top: var(--s-2); }
+.gate__foot { font-size: var(--step--1); color: var(--ink-2); text-align: center; }
+.gate__foot a { color: var(--paint); font-weight: 600; }
+
+.session { margin: var(--s-6) 0; }
+.session__title { font-family: var(--display); font-size: var(--step-1); font-weight: 700; }
+.facts { margin: var(--s-4) 0 0; border-top: var(--rule); }
+.facts__row { display: grid; grid-template-columns: 9rem 1fr; gap: var(--s-3); padding: var(--s-3) 0; border-bottom: var(--rule); align-items: baseline; }
+.facts__row dt { font-family: var(--mono); font-size: var(--step--1); text-transform: uppercase; letter-spacing: .08em; color: var(--ink-2); }
+.facts__row dd { margin: 0; font-size: var(--step--1); }
+@media (max-width: 30rem) { .facts__row { grid-template-columns: 1fr; gap: var(--s-1); } }
+
+.rows { display: grid; gap: var(--s-4); margin-top: var(--s-5); }
+@media (min-width: 44rem) { .rows { grid-template-columns: repeat(2, 1fr); } }
