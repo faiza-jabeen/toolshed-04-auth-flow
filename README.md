@@ -1,12 +1,12 @@
-# Toolshed — authentication flow
+﻿# Toolshed â€” authentication flow
 
 Task 04 of the Neurofive Solutions Full Stack Web Development internship:
 *Authentication flow (signup, login, protected pages).*
 
 ```
 04-auth-flow/
-├── server/   Express + SQLite + bcryptjs + jsonwebtoken
-└── client/   React 19 + React Router 7
+â”œâ”€â”€ server/   Express + SQLite + bcryptjs + jsonwebtoken
+â””â”€â”€ client/   React 19 + React Router 7
 ```
 
 ---
@@ -23,10 +23,10 @@ So I split the token in two:
 | | Access token | Refresh token |
 |---|---|---|
 | **Lives** | a module-scope variable in `client/src/auth/api.js` | httpOnly cookie |
-| **Readable by JS** | only by my own module — never written to any storage API | no, not by anything |
+| **Readable by JS** | only by my own module â€” never written to any storage API | no, not by anything |
 | **Lifetime** | 15 minutes | 7 days |
 | **Sent** | `Authorization: Bearer` on protected calls | automatically, and only to `/api/auth` (cookie `path`) |
-| **Revocable** | no, but it expires in 15 min | **yes** — stored as a SHA-256 hash in `refresh_tokens`, revoked on logout |
+| **Revocable** | no, but it expires in 15 min | **yes** â€” stored as a SHA-256 hash in `refresh_tokens`, revoked on logout |
 
 The consequences, which are the point:
 
@@ -35,7 +35,7 @@ The consequences, which are the point:
 - **Refresh tokens rotate.** Every `/refresh` revokes the token it just used and
   issues a new one, so a captured token is single-use.
 - **Logout genuinely ends the session** server-side, not just client-side.
-- **A database leak is not a session leak** — the table holds hashes, not tokens.
+- **A database leak is not a session leak** â€” the table holds hashes, not tokens.
 - **Reload does not sign you out.** On boot the app calls `/refresh` once; the
   cookie proves who you are and a fresh access token comes back.
 
@@ -45,19 +45,19 @@ plus `credentials: 'include'` when the API is on a different origin. Worth it.
 ## Flow
 
 ```
-signup / login ──▶ 201/200 { user, accessToken }  + Set-Cookie: toolshed_rt (httpOnly)
-                          │
-                   access token → memory only
-                          │
-GET /api/loans  ──▶ Authorization: Bearer …
-                          │
+signup / login â”€â”€â–¶ 201/200 { user, accessToken }  + Set-Cookie: toolshed_rt (httpOnly)
+                          â”‚
+                   access token â†’ memory only
+                          â”‚
+GET /api/loans  â”€â”€â–¶ Authorization: Bearer â€¦
+                          â”‚
                    401 "expired"?
-                          │
-                   POST /api/auth/refresh (cookie) ──▶ new access token, cookie rotated
-                          │                                    │
-                   replay original request              refresh fails → clear + /login
-                          │
-logout ──────────▶ revoke row, clear cookie, drop in-memory token
+                          â”‚
+                   POST /api/auth/refresh (cookie) â”€â”€â–¶ new access token, cookie rotated
+                          â”‚                                    â”‚
+                   replay original request              refresh fails â†’ clear + /login
+                          â”‚
+logout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¶ revoke row, clear cookie, drop in-memory token
 ```
 
 Concurrent 401s share one in-flight refresh promise, so five parallel requests
@@ -69,7 +69,7 @@ do not fire five refreshes.
 ships:
 
 ```jsx
-if (status === 'booting')        return <Checking session… />   // ← not signed out yet
+if (status === 'booting')        return <Checking sessionâ€¦ />   // â† not signed out yet
 if (status !== 'authenticated')  return <Navigate to="/login" state={{ from }} />
 if (role && user.role !== role)  return <Navigate to="/dashboard" />
 return <Outlet />
@@ -86,7 +86,7 @@ you originally asked for.
 | `/keeper` | `role === 'keeper'` only |
 
 **The client guard is convenience, not security.** `/api/loans` runs
-`requireAuth` and `/api/loans/all` runs `requireRole('keeper')` independently —
+`requireAuth` and `/api/loans/all` runs `requireRole('keeper')` independently â€”
 deleting the client guard in devtools gets you a blank page and a 403.
 
 ## Password handling
@@ -95,20 +95,20 @@ deleting the client guard in devtools gets you a blank page and a 403.
 - **Length first**: minimum 10 characters, one letter, one number. No forced
   symbol-and-uppercase rule, because those push people toward `Passw0rd!` rather
   than toward length. A small leaked-password list is rejected outright.
-- **Same rules on both ends** — `client/src/auth/rules.js` mirrors
+- **Same rules on both ends** â€” `client/src/auth/rules.js` mirrors
   `server/src/lib/validate.js`, and server field errors overwrite client ones in
   the same error object, so both render in the same place.
 - **Login is timing-safe about which emails exist**: a missing account is still
   compared against a dummy hash, so response time does not leak membership.
 - Wrong email and wrong password give the *same* message.
-- 20 auth requests per IP per minute → **429**.
+- 20 auth requests per IP per minute â†’ **429**.
 
 ## Run it
 
 ```bash
 cd server
 cp .env.example .env
-node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"   # ×2, paste into .env
+node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"   # Ã—2, paste into .env
 npm install && npm run dev        # :4000
 
 cd ../client
@@ -122,7 +122,7 @@ To make yourself a keeper and see the role gate:
 cd server && node -e "
 const D=require('better-sqlite3'); const d=new D('./data/auth.db');
 d.prepare(\"UPDATE users SET role='keeper' WHERE email=?\").run('you@example.com');
-console.log('done — sign out and back in');"
+console.log('done â€” sign out and back in');"
 ```
 
 ## Verification
@@ -140,11 +140,11 @@ Run against a live server:
 | login, wrong password | **401**, same message as unknown email |
 | login, correct | **200** |
 | `/refresh` with cookie | **200**, new token |
-| **replay the same refresh token** | **401** — it was rotated |
+| **replay the same refresh token** | **401** â€” it was rotated |
 | after logout, replay | **401** |
 | tampered token | **401** |
 | 25 rapid logins | **429** |
-| stored password hash | `$2a$12$…` — bcrypt, cost 12 |
+| stored password hash | `$2a$12$â€¦` â€” bcrypt, cost 12 |
 | stored refresh tokens | SHA-256 hex, not raw JWTs |
 
 Client builds clean at 78 KB gzipped.
@@ -156,13 +156,3 @@ API on Render/Railway with `NODE_ENV=production` (turns on `secure` cookies and
 mounted disk for `DATABASE_PATH`. Client on Netlify/Vercel with `VITE_API_URL`
 and an SPA rewrite. **Both must be HTTPS** or the cookie will not be set.
 
-## Still to do before submitting
-
-- [ ] Push to GitHub
-- [ ] Deploy both halves
-- [ ] Record the video in this order: open `/dashboard` signed out → bounced to
-      login → sign up → land on the dashboard → **hard reload to show you stay
-      signed in** → open devtools and show `localStorage` is empty and the cookie
-      is `HttpOnly` → visit `/keeper` as a member for the 403 → sign out →
-      open `/dashboard` again and get bounced
-- [ ] Post the video on LinkedIn
